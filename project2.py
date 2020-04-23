@@ -54,61 +54,6 @@ def fifo():
 # TODO: implement LRU
 def lru():
     global lru_faults
-    global page_frames
-    
-    lru_stack = list(page_ref_str) # LRU 'stack'
-    
-    page_frames_amt = 3
-    
-    # Initialize page frames
-    for frame in range(page_frames_amt):
-        page_frames.append(lru_stack.pop(0))
-        lru_faults += 1 # all empty is a fault
-    
-    remaining_pgs_1 = len(lru_stack) 
-    
-    for index in range(remaining_pgs_1):
-    
-        found = False    
-    
-        for frame_val in page_frames:
-            if frame_val == lru_stack[0]:
-                found = True
-                lru_stack.pop(0)
-                break
-        
-        if found != True:
-        
-            lru_faults += 1    
-        
-            replaced = False    
-        
-            remaining_pgs_2 = len(lru_stack)
-            
-            temp_page_frame = list(page_frames)
-            
-            for page in range(remaining_pgs_2):  # iterate through the pages
-                
-                for value in temp_page_frame:  # iterate through the frames
-                    
-                    if lru_stack[page] == value:
-                        temp_page_frame.remove(value) # assuming no repeated values
-    
-    
-                if len(temp_page_frame) == 1:
-                    location = page_frames.index(temp_page_frame[0]) # finds the location of the frame to be replaced
-                    page_frames[location] = lru_stack.pop(0)
-                    replaced = True
-                    break
-        
-            # Replaces in a random location within the bounds of what is left
-            if replaced != True:
-                rand_loc = random.randint(0, len(temp_page_frame) - 1)
-                loc = page_frames.index(temp_page_frame[rand_loc])
-                page_frames[loc] = lru_stack.pop(0) # Finds the page in the frame and replaces it 
-                                                                                            # with the new page
-            
-        
     
     print('\nPage faults using LRU: ' + str(lru_faults))
 # ----------------------------------
@@ -117,7 +62,62 @@ def lru():
 # OPT Algorithm (Optimal)
 # TODO: implement OPT
 def opt():
-    global opt_faults
+    global opt_fault
+    global page_frames
+    
+    opt_stack = list(page_ref_str) # opt 'stack'
+    
+    page_frames_amt = 3
+    
+    # Initialize page frames
+    for frame in range(page_frames_amt):
+        page_frames.append(opt_stack.pop(0))
+        opt_faults += 1 # all empty is a fault
+    
+    remaining_pgs_1 = len(opt_stack) 
+    
+    for index in range(remaining_pgs_1):
+    
+        found = False    
+    
+        for frame_val in page_frames:
+            if frame_val == opt_stack[0]:
+                found = True
+                opt_stack.pop(0)
+                break
+        
+        if found != True:
+        
+            opt_faults += 1    
+        
+            replaced = False    
+        
+            remaining_pgs_2 = len(opt_stack)
+            
+            temp_page_frame = list(page_frames)
+            
+            for page in range(remaining_pgs_2):  # iterate through the pages
+                
+                for value in temp_page_frame:  # iterate through the frames
+                    
+                    if opt_stack[page] == value:
+                        temp_page_frame.remove(value) # assuming no repeated values
+    
+    
+                if len(temp_page_frame) == 1:
+                    location = page_frames.index(temp_page_frame[0]) # finds the location of the frame to be replaced
+                    page_frames[location] = opt_stack.pop(0)
+                    replaced = True
+                    break
+        
+            # Replaces in a random location within the bounds of what is left
+            if replaced != True:
+                rand_loc = random.randint(0, len(temp_page_frame) - 1)
+                loc = page_frames.index(temp_page_frame[rand_loc])
+                page_frames[loc] = opt_stack.pop(0) # Finds the page in the frame and replaces it 
+                                                                                            # with the new page
+            
+        
     print('\nPage faults using OPT: ' + str(opt_faults))
 # -----------------------
 
