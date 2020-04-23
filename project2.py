@@ -88,6 +88,13 @@ def fifo():
 # TODO: implement LRU
 def lru():
     global lru_faults
+    
+    lru_q = list(page_ref_str)
+    
+    for index in range(page_frames_amt):
+        
+    
+    
     print('\nPage faults using LRU: ' + str(lru_faults))
 # ----------------------------------
 
