@@ -45,40 +45,6 @@ def print_ref_string():
 # TODO: implement FIFO
 def fifo():
 
-    global page_ref_str
-    global page_frames
-    global fifo_faults
-    fifo_list = list(page_ref_str)  # Make an unlinke copy
-    page_frames_amt = 1
-    for ref in page_ref_str:         # iterate page reference list
-        #print('\n** Next page ref = ' + str(ref) + ' **')  # debug
-        page_found = False
-        for index in range(page_frames_amt):       # look for page in active frames
-            if ref == page_frames[index]:            # page found in existing frame
-                print('Page found! ref = ' + str(ref) + '; ' + ' frame ' + str(index) + ' = ' + str(page_frames[index]))  # debug
-                page_found = True
-                break
-
-        if not page_found:  # page fault:
-            free_frame_found = False
-            frame_counter = 0
-            fifo_faults += 1
-            
-            for index in range(page_frames_amt):         # look for empty frames
-                if page_frames[index] == 0:               # found a free frame
-                    page_frames[index] = ref  # replace free frame
-                    print('Replaced free frame ' + str(frame_counter) + ' with page ' + str(ref))  # debug
-                    free_frame_found = True
-                    break
-                frame_counter += 1
-                
-            if not free_frame_found:  # page fault: need to replace a non-empty frame via FIFO
-                frame_to_swap = fifo_list.pop(0)   # pop frame to be swapped from FIFO queue
-                print('Page fault! FIFO faults = ' + str(fifo_faults) + ' Next page in FIFO queue to swap is ' + str(frame_to_swap))
-                for index in range(page_frames_amt):
-                    if page_frames[index] == frame_to_swap:   # found frame to be swapped
-                        page_frames[index] = ref
-                        print('Replaced existing frame ' + str(index) + ' = ' + str(page_frames[index]) + ' with page ' + str(ref))  # debug
 
     print('\nPage faults using FIFO: ' + str(fifo_faults))
 # ------------------------------------
@@ -88,12 +54,61 @@ def fifo():
 # TODO: implement LRU
 def lru():
     global lru_faults
+    global page_frames
     
-    lru_q = list(page_ref_str)
+    lru_stack = list(page_ref_str) # LRU 'stack'
     
-    for index in range(page_frames_amt):
+    page_frames_amt = 3
+    
+    # Initialize page frames
+    for frame in range(page_frames_amt):
+        page_frames.append(lru_stack.pop(0))
+        lru_faults += 1 # all empty is a fault
+    
+    remaining_pgs_1 = len(lru_stack) 
+    
+    for index in range(remaining_pgs_1):
+    
+        found = False    
+    
+        for frame_val in page_frames:
+            if frame_val == lru_stack[0]:
+                found = True
+                lru_stack.pop(0)
+                break
         
+        if found != True:
+        
+            lru_faults += 1    
+        
+            replaced = False    
+        
+            remaining_pgs_2 = len(lru_stack)
+            
+            temp_page_frame = list(page_frames)
+            
+            for page in range(remaining_pgs_2):  # iterate through the pages
+                
+                for value in temp_page_frame:  # iterate through the frames
+                    
+                    if lru_stack[page] == value:
+                        temp_page_frame.remove(value) # assuming no repeated values
     
+    
+                if len(temp_page_frame) == 1:
+                    location = page_frames.index(temp_page_frame[0]) # finds the location of the frame to be replaced
+                    page_frames[location] = lru_stack.pop(0)
+                    replaced = True
+                    break
+        
+            # Replaces in a random location within the bounds of what is left
+            if replaced != True:
+                rand_loc = random.randint(0, len(temp_page_frame) - 1)
+                loc = page_frames.index(temp_page_frame[rand_loc])
+                page_frames[loc] = lru_stack.pop(0) # Finds the page in the frame and replaces it 
+                                                                                            # with the new page
+            
+        
     
     print('\nPage faults using LRU: ' + str(lru_faults))
 # ----------------------------------
@@ -136,14 +151,7 @@ print 'Number of page frames = ' + str(page_frames_amt)
 # -------------------------------
 
 
-# initialize page frames
-counter = 1
-page_frames_amt = 1
-for frame in range(page_frames_amt):
-    temp = counter * -1  # debug
-    page_frames.append(temp)  # -1 == empty
-    print('Frame ' + str(counter) + ' = ' + str(temp))  # debug
-    counter += 1
+
 
 # ----------------------
 
