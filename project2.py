@@ -249,6 +249,7 @@ for run in range(30):
     opt()
     opt_faults_total += opt_faults  # save fault count to grand total
     opt_faults = 0                  # reset per-run fault count
+    page_frames = []                # reinitialize to empty for next run
 
     page_frames_amt += 1            # incr frame count for next run
 
